@@ -1,3 +1,7 @@
+#include <unistd.h>
+#define GetCurrentDir getcwd
+
+
 // Include standard headers
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,11 +22,20 @@
 #include "IndexBuffer.h"
 #include "Shader.h"
 #include "Renderer.h"
+#include "Texture.h"
 
-void PrintLog(std::string log) {
-	
+#include "constants.hpp"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+
+std::string get_current_dir() {
+   char buff[FILENAME_MAX]; //create string buffer to hold path
+   GetCurrentDir( buff, FILENAME_MAX );
+   std::string current_working_dir(buff);
+   return current_working_dir;
 }
-
 
 GLFWwindow* InitWindow(){
 	time_t ttime = time(0);
@@ -71,6 +84,7 @@ GLFWwindow* InitWindow(){
 
 int main(void)
 {
+	
 	GLFWwindow* window = InitWindow();
 	if(!window)
 		return -1;
@@ -79,11 +93,11 @@ int main(void)
 	// Dark blue Background color 
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-	float positions[] = {
-        -0.5f, -0.5f, // 0
-         0.5f, -0.5f, // 1
-         0.5f,  0.5f, // 2
-        -0.5f,  0.5f  // 3
+    float positions[] = {
+        -0.5f, -0.5f, 0.0f, 0.0f, // 0
+         0.5f, -0.5f, 1.0f, 0.0f, // 1
+         0.5f,  0.5f, 1.0f, 1.0f, // 2
+        -0.5f,  0.5f, 0.0f, 1.0f  // 3
     };
 
 	unsigned int indices[] = {
@@ -91,22 +105,31 @@ int main(void)
         2, 3, 0
     };
 
+    GLCall( glEnable(GL_BLEND) );
+    GLCall( glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) );
 
 	{
 		VertexArray va;
-		VertexBuffer vb(positions, 4 * 2 * sizeof(float));
+		VertexBuffer vb(positions, 4 * 4 * sizeof(float));
 		IndexBuffer ib(indices, 6);
+
+		glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
 
 		VertexBufferLayout layout;
 		layout.AddFloat(2);
+		layout.AddFloat(2);
 
 		va.AddBuffer(vb, layout);
-
-		Shader shader("/home/cry/dev/C++/opengl-program/src/res/shaders/Basic.shader");
+		//std::string cwd = get_current_dir();
+		//cwd.erase(cwd.end()-9, cwd.end(), 9)
+		
+		//std::cout << cwd << std::endl;
+		Shader shader("../../src/res/shaders/Basic.shader");
 		shader.Bind();
 
-		float red = 0.0f;
-		float step = 0.05f;
+		Texture texture("../../src/res/textures/Lenna.png");
+		texture.Bind();
+		shader.SetUniform1i("u_Texture", 0);
 
 		Renderer renderer;
 
@@ -114,16 +137,13 @@ int main(void)
 			renderer.Clear();
 
 			shader.Bind();
-			shader.SetUniform4f("u_Color", red, 0.3, 0.8, 1.0);
 
 			renderer.Draw(va, ib, shader);
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 
-			if(red < 0.0f || red > 1.0f)
-				step *= -1.0;
-			red += step;
+
 		} while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
 					glfwWindowShouldClose(window) == 0);
 	}
