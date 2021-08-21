@@ -7,9 +7,9 @@ OBJ_DIR="../build/obj"
 
 PROGRAM_NAME="OpenGLProgram"
 
-SRC_FILES="Application.cpp IndexBuffer.cpp  "
-OBJ_FILES="../build/obj/IndexBuffer.o ../build/obj/Renderer.o ../build/obj/Shader.o ../build/obj/VertexArray.o ../build/obj/VertexBuffer.o"
-CPPFLAGS="-Wall -g"
+SRC_FILES="IndexBuffer.cpp  Renderer.cpp Shader.cpp VertexArray.cpp VertexBuffer.cpp"
+OBJ_FILES="../build/obj/VertexBuffer.o ../build/obj/VertexArray.o ../build/obj/IndexBuffer.o ../build/obj/Shader.o ../build/obj/Renderer.o"
+CPPFLAGS=""
 LDFLAGS="-lGLEW -lGLU -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl"
 
 echo "Compiling..."
@@ -24,35 +24,41 @@ echo ""
 # move into src/
 cd src/
 
+#include "VertexBuffer.h"
+#include "VertexArray.h"
+#include "IndexBuffer.h"
+#include "Shader.h"
+#include "Renderer.h"
 
 # Compile
 echo -e "\e[1;34mCompiling objects:\e[0m"
 echo -e "\e[1;34m│\e[0m"
 
-echo -e -n "\e[1;34m├ Compiling IndexBuffer...\e[0m"
+echo -e -n "\e[1;34m└ Compiling VertexBuffer...\e[0m"
 
-g++ -c -o ${OBJ_DIR}/IndexBuffer.o   IndexBuffer.cpp  	${CPPFLAGS} ${LDFLAGS} && echo -e "\e[1;32mCompiled!\e[0m"
-
-echo -e -n "\e[1;34m├ Compiling Renderer...\e[0m"
-
-g++ -c -o ${OBJ_DIR}/Renderer.o      Renderer.cpp     	${CPPFLAGS} ${LDFLAGS} && echo -e "\e[1;32mCompiled!\e[0m"
-
-echo -e -n "\e[1;34m├ Compiling Shader...\e[0m"
-
-g++ -c -o ${OBJ_DIR}/Shader.o        Shader.cpp       	${CPPFLAGS} ${LDFLAGS} && echo -e "\e[1;32mCompiled!\e[0m"
+g++ -c -o ${OBJ_DIR}/VertexBuffer.o  VertexBuffer.cpp 	${CPPFLAGS} ${LDFLAGS} && echo -e "\e[1;32mCompiled!\e[0m"
 
 echo -e -n "\e[1;34m├ Compiling VertexArray...\e[0m"
 
 g++ -c -o ${OBJ_DIR}/VertexArray.o   VertexArray.cpp  	${CPPFLAGS} ${LDFLAGS} && echo -e "\e[1;32mCompiled!\e[0m"
 
-echo -e -n "\e[1;34m└ Compiling VertexBuffer...\e[0m"
+echo -e -n "\e[1;34m├ Compiling IndexBuffer...\e[0m"
 
-g++ -c -o ${OBJ_DIR}/VertexBuffer.o  VertexBuffer.cpp 	${CPPFLAGS} ${LDFLAGS} && echo -e "\e[1;32mCompiled!\e[0m"
+g++ -c -o ${OBJ_DIR}/IndexBuffer.o   IndexBuffer.cpp  	${CPPFLAGS} ${LDFLAGS} && echo -e "\e[1;32mCompiled!\e[0m"
+
+echo -e -n "\e[1;34m├ Compiling Shader...\e[0m"
+
+g++ -c -o ${OBJ_DIR}/Shader.o        Shader.cpp       	${CPPFLAGS} ${LDFLAGS} && echo -e "\e[1;32mCompiled!\e[0m"
+
+echo -e -n "\e[1;34m├ Compiling Renderer...\e[0m"
+
+g++ -c -o ${OBJ_DIR}/Renderer.o      Renderer.cpp     	${CPPFLAGS} ${LDFLAGS} && echo -e "\e[1;32mCompiled!\e[0m"
+
 
 echo -e "\e[1;32mCompiled!\e[0m"
 echo ""
 echo -e "\e[1;36mLinking...\e[0m"
-g++ -o ${BIN_DIR}/${PROGRAM_NAME} ${SRC_FILES} ${OBJ_FILES} ${CPPFLAGS} ${LDFLAGS} || echo "Error linking!"
+g++ -o ${BIN_DIR}/${PROGRAM_NAME} Application.cpp ${OBJ_FILES} ${CPPFLAGS} ${LDFLAGS} || echo "Error linking!"
 echo -e "\e[1;32mCompiling complete!\e[0m"
 
 
